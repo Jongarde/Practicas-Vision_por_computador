@@ -9,13 +9,17 @@ def draw_point_line(event, x, y, flags, param):
 		point_collection.append((x, y))
 		cv2.circle(img, (x, y), 5, (0, 0, 255), -1)
 		tam = len(point_collection)
-		if(tam > 1):
+		if(tam > 1 and tam < 4):
 			cv2.line(img, point_collection[tam-2], point_collection[tam-1], (0, 0, 255), 3) 
+		elif(tam == 4):
+			cv2.line(img, point_collection[tam-2], point_collection[tam-1], (0, 0, 255), 3) 
+			cv2.line(img, point_collection[tam-1],point_collection[0], (0, 0, 255), 3)
+			
 		cv2.imshow('MyWindow', img)
 
 def crop_selection(img, point_collection):
 	points = np.array(point_collection)
-	if len(point_collection) == 5:
+	if len(point_collection) == 4:
 		top_left_point = points.min(axis=0)
 		bottom_right_point = points.max(axis=0)
 		print(point_collection)
@@ -29,11 +33,12 @@ def crop_selection(img, point_collection):
 img = cv2.imread("Euros.jpg")
 
 cv2.namedWindow('MyWindow')
+cv2.imshow('MyWindow', img)
 cv2.setMouseCallback('MyWindow', draw_point_line)
 key = cv2.waitKey()
 if key == ord('s') or key == 'S':
 	crop_selection(img,point_collection)
-cv2.imshow('MyWindow', img)
+
 exit_key = cv2.waitKey()
 if key == 27:
 	cv2.destroyAllWindows()
