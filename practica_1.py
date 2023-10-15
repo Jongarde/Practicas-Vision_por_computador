@@ -30,7 +30,6 @@ def crop_selection(img, point_collection):
 			bottom_right_point = points.max(axis=0)
 			cropped_img = img[top_left_point[1]:bottom_right_point[1],top_left_point[0]:bottom_right_point[0]]
 			cv2.imwrite("crop" + str(i) + ".jpg", cropped_img)
-			#cv2.imshow("crop",cropped_img)
 		else:
 			print("You have to select 4 points for each region!")
 
@@ -40,8 +39,11 @@ cv2.namedWindow('MyWindow')
 cv2.imshow('MyWindow', img)
 cv2.setMouseCallback('MyWindow', draw_point_line)
 key = cv2.waitKey()
-if key == ord('s') or key == 'S':
+if key == ord('s') or key == ord('S'):
 	crop_selection(img,point_collection)
+	for i in range(len(region_collection)):
+		print("crop" + str(i) + ".jpg")
+		cv2.imshow("Crop",cv2.imread("crop" + str(i) + ".jpg"))
 
 exit_key = cv2.waitKey()
 if key == 27:
