@@ -1,73 +1,51 @@
 import cv2
 import numpy as np
-import tkinter as tk
-from tkinter import Scale
 
-# Función para actualizar los valores cuando los controles deslizantes cambian
-def update_values():
-    global limite_bajo, limite_alto, gauss, xy
-    limite_bajo = limite_bajo_slider.get()
-    limite_alto = limite_alto_slider.get()
-    gauss = gauss_slider.get()
-    xy = xy_slider.get()
+def convert_frame(frame):
+	#img = cv2.pyrDown(cv2.imread("gorka.jpeg", cv2.IMREAD_UNCHANGED))
+	img = cv2.resize(frame, (600, 600))
 
-    # Asegurarse de que el valor de gauss sea impar
-    gauss = max(1, gauss) if gauss % 2 == 0 else gauss
+	img2 = cv2.GaussianBlur(img,(5,5),5,5)
 
-    # Procesar la imagen con los nuevos valores
-    process_image()
+	ret, thresh = cv2.threshold(cv2.cvtColor(img2,cv2.COLOR_BGR2GRAY), 150, 255, cv2.THRESH_BINARY)
+	contours, hier = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Función para procesar la imagen con los valores actuales
-def process_image():
-    img = cv2.pyrDown(cv2.imread("gorka.jpeg", cv2.IMREAD_UNCHANGED))
-    img = cv2.resize(img, (600, 600))
+	img_contorno=cv2.drawContours(img, contours, -1, color=(0, 0, 0), thickness = cv2.FILLED)
+	ret2, thresh2=cv2.threshold(cv2.cvtColor(img_contorno,cv2.COLOR_BGR2GRAY),1,255,cv2.THRESH_BINARY)
 
-    blurred = cv2.GaussianBlur(img, (gauss, gauss), xy, xy)
-    mask = cv2.inRange(cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY), limite_bajo, limite_alto)
+	img_final=cv2.bitwise_and(img,img, mask=thresh2)
 
-    frame = cv2.bitwise_and(img, img, mask=mask)
+	ret3, thresh3=cv2.threshold(cv2.cvtColor(img_contorno,cv2.COLOR_BGR2GRAY),58,255,cv2.THRESH_BINARY)
 
-    # Mostrar la imagen en una ventana
-    cv2.imshow("hull", frame)
-    cv2.waitKey(1)
+	img_final2=cv2.bitwise_and(img_final,img_final, mask=thresh3)
+	
+	return img_final2
 
-# Crear la ventana de control
-root = tk.Tk()
-root.title("Control de Parámetros")
+	#cv2.imshow("final",img_final2)
 
-# Crear controles deslizantes para ajustar los valores
-limite_bajo_slider = Scale(root, label="Limite Bajo", from_=0, to=255, orient="horizontal", length=300)
-limite_alto_slider = Scale(root, label="Limite Alto", from_=0, to=255, orient="horizontal", length=300)
-gauss_slider = Scale(root, label="Gauss", from_=1, to=81, orient="horizontal", length=300, resolution=1)
-xy_slider = Scale(root, label="xy", from_=1, to=51, orient="horizontal", length=300, resolution=2)
+	#cv2.imshow("hull", img)
+	#cv2.waitKey()
 
-limite_bajo_slider.pack()
-limite_alto_slider.pack()
-gauss_slider.pack()
-xy_slider.pack()
+	# Limpiar después de cerrar la ventana
+	#cv2.destroyAllWindows()
+	
 
-# Configurar una función de actualización para los controles deslizantes
-limite_bajo_slider.bind("<Motion>", lambda event: update_values())
-limite_alto_slider.bind("<Motion>", lambda event: update_values())
-gauss_slider.bind("<Motion>", lambda event: update_values())
-xy_slider.bind("<Motion>", lambda event: update_values())
+cap = cv2.VideoCapture(0)
 
-# Establecer los valores iniciales
-limite_bajo = 60
-limite_alto = 130
-gauss = 11
-xy = 25
-
-limite_bajo_slider.set(limite_bajo)
-limite_alto_slider.set(limite_alto)
-gauss_slider.set(gauss)
-xy_slider.set(xy)
-
-# Procesar la imagen inicial
-process_image()
-
-# Iniciar el bucle principal de la ventana
-root.mainloop()
-
-# Limpiar después de cerrar la ventana
-cv2.destroyAllWindows()
+while True:
+	ret, frame = cap.read()
+	
+	if not ret:
+		print("Error")
+		break
+		
+	img = convert_frame(frame)
+	
+	cv2.imshow("skin", img)
+	
+	if cv2.waitKey(1) and 0xFF == ord('q'):
+		break
+		
+cap.release()
+cv2.destroyAllWindows()		
+	
