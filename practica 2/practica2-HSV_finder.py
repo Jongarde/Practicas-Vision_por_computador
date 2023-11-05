@@ -3,44 +3,6 @@ import numpy as np
 import tkinter as tk
 from tkinter import Scale
 
-"""
-# Initialize the camera capture
-cap = cv2.VideoCapture(0)  # 0 indicates the default camera (usually the built-in webcam)
-
-while True:
-    # Capture frame-by-frame
-    ret, frame = cap.read()
-
-    if not ret:
-        print("Error capturing the video feed.")
-        break
-
-    #frame = cv2.resize(frame, (600, 600))
-    
-    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-
-    limite_bajo = np.array([0, 30, 60], dtype=np.uint8)
-    limite_alto = np.array([20, 180, 255], dtype=np.uint8)
-
-    mask = cv2.inRange(hsv, limite_bajo, limite_alto)
-
-    # Reduce noise with blur filters
-    mask = cv2.medianBlur(mask, 5)
-    mask = cv2.GaussianBlur(mask, (5, 5), 0)
-
-    skin = cv2.bitwise_and(frame, frame, mask=mask)
-
-    cv2.imshow('Skin Detection', skin)
-
-    # Break the loop when the 'q' key is pressed
-    if cv2.waitKey(1) & 0xFF == ord('q'):
-        break
-
-# Release the camera and close all OpenCV windows
-cap.release()
-cv2.destroyAllWindows()
-"""
-
 def update_values():
 	global limite_bajo_h, limite_bajo_s, limite_bajo_v, limite_alto_h, limite_alto_s, limite_alto_h
 	limite_bajo_h = limite_bajoh_slider.get()
@@ -105,11 +67,11 @@ limite_altov_slider.bind("<Motion>", lambda event: update_values())
 
 # Establecer los valores iniciales
 limite_bajo_h = 0
-limite_bajo_s = 91
-limite_bajo_v = 84
+limite_bajo_s = 49
+limite_bajo_v = 74
 
-limite_alto_h = 20
-limite_alto_s = 180
+limite_alto_h = 23
+limite_alto_s = 139
 limite_alto_v = 255
 
 limite_bajoh_slider.set(limite_bajo_h)

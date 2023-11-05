@@ -16,8 +16,8 @@ while True:
     
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
 
-    limite_bajo = np.array([0, 91, 84], dtype=np.uint8)
-    limite_alto = np.array([20, 180, 255], dtype=np.uint8)
+    limite_bajo = np.array([0, 49, 74], dtype=np.uint8)
+    limite_alto = np.array([23, 139, 255], dtype=np.uint8)
 
     mask = cv2.inRange(hsv, limite_bajo, limite_alto)
 
